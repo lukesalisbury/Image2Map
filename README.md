@@ -1,0 +1,1 @@
+Creates a map from a Image for use with Mokoi Gaming, contain original php version and some other attempt method 
