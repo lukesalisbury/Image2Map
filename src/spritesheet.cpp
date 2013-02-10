@@ -1,18 +1,18 @@
 /*-----------------------------------------------------------------------------
 Copyright © 2013 Luke Salisbury
-This software is provided 'as-is', without any express or implied warranty. In 
-no event will the authors be held liable for any damages arising from the use 
+This software is provided 'as-is', without any express or implied warranty. In
+no event will the authors be held liable for any damages arising from the use
 of this software.
 
-Permission is granted to anyone to use this software for any purpose, including 
-commercial applications, and to alter it and redistribute it freely, subject to 
+Permission is granted to anyone to use this software for any purpose, including
+commercial applications, and to alter it and redistribute it freely, subject to
 the following restrictions:
 
-1. The origin of this software must not be misrepresented; you must not claim 
-   that you wrote the original software. If you use this software in a product, 
-   an acknowledgment in the product documentation would be appreciated but is 
+1. The origin of this software must not be misrepresented; you must not claim
+   that you wrote the original software. If you use this software in a product,
+   an acknowledgment in the product documentation would be appreciated but is
    not required.
-2. Altered source versions must be plainly marked as such, and must not be 
+2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 -----------------------------------------------------------------------------*/
@@ -21,12 +21,13 @@ the following restrictions:
 #include "spritematchdialog.hpp"
 #include <iostream>
 #include "spritechooser.hpp"
+#include <QtXml/QDomDocument>
 
 SpriteSheet::SpriteSheet(QFileInfo file)
 {
 	this->file = file;
 	this->image = new QImage(file.path() + "/" + file.completeBaseName());
-	this->name = this->file.fileName();
+	this->name = this->file.completeBaseName();
 
 	QFile stream(file.filePath());
 	if ( stream.open(QIODevice::ReadOnly | QIODevice::Text) )
@@ -54,15 +55,43 @@ SpriteSheet::SpriteSheet(QFileInfo file)
 		}
 	}
 	stream.close();
-	/*
-	qDebug() << "Sprites on " << file.completeBaseName();
-	QHashIterator<QString, QImage> i(items);
+
+/*
+	QDomDocument doc("");
+	QFile stream(this->file.filePath());
+	if ( stream.open(QIODevice::ReadOnly | QIODevice::Text) )
+	{
+		doc.setContent(&stream);
+
+		QDomElement rootElement = doc.documentElement();
+		for( QDomNode node = rootElement.firstChildElement("sprite"); !node.isNull(); node = node.nextSibling() )
+		{
+			QDomElement element = node.toElement();
+			QDomElement position = element.firstChildElement("position");
+			QRect rect;
+			QString name = element.attribute("name");
+
+
+
+			rect.setRect( position.attribute("x","0").toInt(),
+						  position.attribute("y","0").toInt(),
+						  position.attribute("w","0").toInt(),
+						  position.attribute("h","0").toInt()
+						  );
+
+			this->items.insert( name, rect );
+		}
+	}
+	stream.close();
+*/
+
+	qDebug() << "Sprites on " << file.completeBaseName() << " " << items.size();
+	QHashIterator<QString, QRect> i(items);
 	while (i.hasNext()) {
 		i.next();
-		quint16 checksum = qChecksum( (char *) (i.value().bits()), i.value().numBytes() );
-		qDebug() << i.key() << ": " << checksum;
+		qDebug() << i.key() << ": " << i.value();
 	}
-	*/
+
 }
 
 

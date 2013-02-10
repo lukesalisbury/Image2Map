@@ -1,18 +1,18 @@
 /*-----------------------------------------------------------------------------
 Copyright © 2013 Luke Salisbury
-This software is provided 'as-is', without any express or implied warranty. In 
-no event will the authors be held liable for any damages arising from the use 
+This software is provided 'as-is', without any express or implied warranty. In
+no event will the authors be held liable for any damages arising from the use
 of this software.
 
-Permission is granted to anyone to use this software for any purpose, including 
-commercial applications, and to alter it and redistribute it freely, subject to 
+Permission is granted to anyone to use this software for any purpose, including
+commercial applications, and to alter it and redistribute it freely, subject to
 the following restrictions:
 
-1. The origin of this software must not be misrepresented; you must not claim 
-   that you wrote the original software. If you use this software in a product, 
-   an acknowledgment in the product documentation would be appreciated but is 
+1. The origin of this software must not be misrepresented; you must not claim
+   that you wrote the original software. If you use this software in a product,
+   an acknowledgment in the product documentation would be appreciated but is
    not required.
-2. Altered source versions must be plainly marked as such, and must not be 
+2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 -----------------------------------------------------------------------------*/
@@ -70,7 +70,30 @@ void ReverseMatchWindow::Scan( SpriteSheet * sheet )
 		dialog.setLabelText(name);
 		app->processEvents();
 
-		FindMatch(map, sheet->GetImage(q.value()), q.value(), local_hits );
+
+		QImage sprite = sheet->GetImage(q.value());
+		QRgb sprite_pixel;
+		bool has_content = false;
+
+		for ( int ix = 0; ix < sprite.width(); ix++ )
+		{
+			for ( int iy = 0; iy < sprite.height(); iy++ )
+			{
+				if ( !sprite.valid(ix,iy) )
+					break;
+				sprite_pixel = sprite.pixel(ix,iy);
+				if ( qAlpha(sprite_pixel) == 255 && sprite_pixel != 0xFF48a048)
+				{
+					has_content = true;
+					break;
+				}
+			}
+		}
+
+		if ( has_content )
+		{
+			FindMatch(map, sheet->GetImage(q.value()), q.value(), local_hits );
+		}
 
 		/* Manage Local hits */
 		QListIterator<QRect> r(local_hits);
@@ -199,14 +222,24 @@ bool ReverseMatchWindow::FindMatch( QImage * map, QImage sprite, QRect rect, QLi
 
 void ReverseMatchWindow::on_actionSave_Map_triggered()
 {
+	QTextStream out(stdout);
 	QString map_filename = QFileDialog::getSaveFileName(this, tr("Save Map file"), NULL, tr("Mokoi Map (*.xml)") );
 
+	QFile data(map_filename);
+
+	if ( data.open(QFile::WriteOnly | QFile::Truncate) )
+	{
+		out.setDevice(&data);
+	}
+
 	std::cout << "Map:" << map_filename.toStdString() << std::endl;
-	std::cout << "<map xmlns=\"http://mokoi.info/projects/mokoi\">" << std::endl;
-	std::cout << "<settings>" << std::endl;
-	std::cout << "<dimensions width=\"1\" height=\"1\" />" << std::endl;
-	std::cout << "<color red=\"0\" blue=\"0\" green=\"0\" mode=\"0\" />" << std::endl;
-	std::cout << "</settings>" << std::endl;
+
+
+	out << "<map xmlns=\"http://mokoi.info/projects/mokoi\">" << '\n';
+	out << "\t<settings>" << '\n';
+	out << "\t\t<dimensions width=\"1\" height=\"1\" />" << '\n';
+	out << "\t\t<color red=\"0\" blue=\"0\" green=\"0\" mode=\"0\" />" << '\n';
+	out << "\t</settings>" << '\n';
 
 
 	QListIterator<DisplayObject*> r(hits);
@@ -214,12 +247,12 @@ void ReverseMatchWindow::on_actionSave_Map_triggered()
 	{
 		DisplayObject * area = r.next();
 
-		std::cout << "<object value=\"" << area->name.toStdString() << "\" type=\"sprite\">" << std::endl;
-		std::cout << "<color red=\"255\" blue=\"255\" green=\"255\" alpha=\"255\" />" << std::endl;
-		std::cout << "<position x=\"" << area->rect.x() << "\" y=\"" << area->rect.y() << "\" ";
-		std::cout << "w=\"" << area->rect.width() << "\" h=\"" << area->rect.height() << "\" z=\"1\" />" << std::endl;
-		std::cout << "</object>" << std::endl;
+		out << "\t<object value=\"" << area->name << "\" type=\"sprite\">" << '\n';
+		out << "\t\t<color red=\"255\" blue=\"255\" green=\"255\" alpha=\"255\" />" << '\n';
+		out << "\t\t<position x=\"" << area->rect.x() << "\" y=\"" << area->rect.y() << "\" ";
+		out << "w=\"" << area->rect.width() << "\" h=\"" << area->rect.height() << "\" z=\"1\" />" << '\n';
+		out << "\t</object>" << '\n';
 
 	}
-	std::cout << "</map>" << std::endl;
+	out << "</map>" << '\n';
 }
