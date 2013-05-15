@@ -29,6 +29,7 @@ SpriteSheet::SpriteSheet(QFileInfo file)
 	this->image = new QImage(file.path() + "/" + file.completeBaseName());
 	this->name = this->file.completeBaseName();
 
+	/*
 	QFile stream(file.filePath());
 	if ( stream.open(QIODevice::ReadOnly | QIODevice::Text) )
 	{
@@ -55,8 +56,8 @@ SpriteSheet::SpriteSheet(QFileInfo file)
 		}
 	}
 	stream.close();
+	*/
 
-/*
 	QDomDocument doc("");
 	QFile stream(this->file.filePath());
 	if ( stream.open(QIODevice::ReadOnly | QIODevice::Text) )
@@ -71,8 +72,6 @@ SpriteSheet::SpriteSheet(QFileInfo file)
 			QRect rect;
 			QString name = element.attribute("name");
 
-
-
 			rect.setRect( position.attribute("x","0").toInt(),
 						  position.attribute("y","0").toInt(),
 						  position.attribute("w","0").toInt(),
@@ -83,18 +82,20 @@ SpriteSheet::SpriteSheet(QFileInfo file)
 		}
 	}
 	stream.close();
-*/
-
+/*
 	qDebug() << "Sprites on " << file.completeBaseName() << " " << items.size();
 	QHashIterator<QString, QRect> i(items);
 	while (i.hasNext()) {
 		i.next();
 		qDebug() << i.key() << ": " << i.value();
 	}
-
+*/
 }
 
-
+int SpriteSheet::spriteCount()
+{
+	return this->items.size();
+}
 
 QImage  SpriteSheet::GetImage(QRect rect)
 {

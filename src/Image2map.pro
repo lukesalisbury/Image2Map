@@ -11,38 +11,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-		mainwindow.cpp \
-	imageconvert.cpp \
-	mapobject.cpp \
-	mapsprite.cpp \
-	table.cpp \
-	imagedelegate.cpp \
 	spritesheet.cpp \
-	spritematchdialog.cpp \
-	spritechooser.cpp \
-	reversematchwindow.cpp \
-	nexttiledialog.cpp \
-	colourmatchdialog.cpp \
-	displayobject.cpp
+	displayobject.cpp \
+	termialscan.cpp \
+	scan.cpp
 
-HEADERS  += mainwindow.hpp \
-	imageconvert.hpp \
-	mapobject.hpp \
-	mapsprite.hpp \
-	table.hpp \
-	tableitem.hpp \
-	imagedelegate.hpp \
+HEADERS  += \
 	spritesheet.hpp \
-	spritematchdialog.hpp \
-	spritechooser.hpp \
-	reversematchwindow.h \
-	nexttiledialog.hpp \
-	colourmatchdialog.h \
-	displayobject.hpp
+	displayobject.hpp \
+	termialscan.hpp \
+	scan.hpp
 
-FORMS    += mainwindow.ui \
-	spritematchdialog.ui \
-	spritechooser.ui \
-	reversematchwindow.ui \
-	nexttiledialog.ui \
-	colourmatchdialog.ui
+FORMS    +=
+
+CONFIG += console
