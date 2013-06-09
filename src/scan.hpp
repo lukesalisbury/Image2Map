@@ -20,6 +20,9 @@ class Scan : public QThread
 	public:
 		Scan(QImage * mapImage, SpriteSheet * spriteSheet );
 		void doScan() { run(); }
+
+		void mergeHits( QList<DisplayObject*> & global_hits) { global_hits.append(hits); }
+
 	protected:
 		void run();
 

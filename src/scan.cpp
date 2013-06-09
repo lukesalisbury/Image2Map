@@ -123,19 +123,21 @@ void Scan::run( )
 		{
 			FindMatch(map, sheet->GetImage(q.value()), q.value(), local_hits );
 		}
+		/* Manage Local hits */
+		QListIterator<QRect> r(local_hits);
+		while (r.hasNext())
+		{
+			QRect area = r.next();
+			DisplayObject * object = new DisplayObject( name, area );
+			hits.append(object);
+
+		}
+		local_hits.clear();
+
 	}
 
 	std::cout << std::endl;
 
 
-	/* Manage Local hits */
-	QListIterator<QRect> r(local_hits);
-	while (r.hasNext())
-	{
-		QRect area = r.next();
-		DisplayObject * object = new DisplayObject( name, area );
-		hits.append(object);
 
-	}
-	local_hits.clear();
 }

@@ -9,8 +9,8 @@
 
 TermialScan::TermialScan()
 {
-	directory = QFileDialog::getExistingDirectory(NULL, "Select Directory", "", QFileDialog::ShowDirsOnly );
-	//directory = "C:/Users/luke/openzelda-quests/TheJourneyBegin";
+	//directory = QFileDialog::getExistingDirectory(NULL, "Select Directory", "", QFileDialog::ShowDirsOnly );
+	directory = "C:/Users/luke/openzelda-quests/TheJourneyBegin";
 }
 
 void TermialScan::loadSpriteSheets()
@@ -20,7 +20,7 @@ void TermialScan::loadSpriteSheets()
 	QStringList filters;
 
 
-	filters << "*.xml";
+	filters << "area_*.xml" << "building_*.xml" << "dungeon*.xml" << "objects_*.xml";
 	currentDir.setNameFilters(filters);
 
 
@@ -28,6 +28,7 @@ void TermialScan::loadSpriteSheets()
 	currentDir.setFilter( QDir::NoDotAndDotDot | QDir::Files );
 
 	entries = currentDir.entryList();
+
 	for( QStringList::ConstIterator entry = entries.begin(); entry != entries.end(); entry++ )
 	{
 		QFileInfo file;
@@ -53,16 +54,20 @@ void TermialScan::run()
 	output = outputInfo.baseName();
 	map = new QImage(mapImagePath);
 
-	std::cout << "Outputting " << output << std::endl;
+	std::cout << "Outputting " << output.toStdString() << std::endl;
 
 	for ( int i = 0; i < sheetList.size(); i++ )
 	{
 		SpriteSheet * sheet = sheetList.at(i);
+
+
 		std::cout << "Scanning " << sheet->name.toStdString() << std::endl;
 
 		Scan scanThread( map, sheet );
 
 		scanThread.doScan();
+		scanThread.mergeHits(this->hits);
+
 	}
 
 
